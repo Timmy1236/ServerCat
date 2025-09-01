@@ -1,0 +1,25 @@
+{
+  "name": "servercat",
+  "version": "1.0.0",
+  "description": "Servidor de mensajeria para los clientes de ChatCat",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "tsc && node dist/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "@types/sqlite3": "^3.1.11",
+    "bcrypt": "^6.0.0",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "socket.io": "^4.8.1",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
+  },
+  "keywords": []
+}
