@@ -1,6 +1,7 @@
 import sqlite3 from 'sqlite3'
 import { open } from 'sqlite'
 import bcrypt from "bcrypt";
+import type { Result } from './types.js';
 
 const db = await open({
   filename: './db.sqlite',
@@ -9,37 +10,37 @@ const db = await open({
 
 /*
 * Función para iniciar sesión de usuario.
-* Devuelve true si el usuario y la contraseña son correctos, false en caso contrario
+* Devuelve un objeto Result
 */
-export async function DBUserLogin(username: string, password: string) {
-  const result = await db.get('SELECT * FROM User WHERE username = ?', [username])
+export async function DBUserLogin(username: string, password: string): Promise<Result> {
+  const result = await db.get('SELECT * FROM User WHERE username = ?', [username]);
 
-  if (result) {
-    const isMatch: boolean = await bcrypt.compare(password, result.password);
+  if (!result) {
+    console.log("[DB] (DB) Usuario no encontrado:", { username });
+    return { success: false, reason: "Usuario no encontrado" };
+  }
 
-    if (isMatch) {
-      console.log("[DB] Usuario autenticado:", { username });
-      return true;
-    } else {
-      console.log("[DB] (HASH) Fallo en la autenticación:", { username });
-      return false;
-    }
+  const isMatch = await bcrypt.compare(password, result.password);
+
+  if (isMatch) {
+    console.log("[DB] Usuario autenticado:", { username });
+    return { success: true };
   } else {
-    console.log("[DB] (DB) Fallo en la autenticación:", { username });
-    return false;
+    console.log("[DB] (HASH) Contraseña incorrecta:", { username });
+    return { success: false, reason: "Contraseña incorrecta" };
   }
 }
 
 /*
 * Función para registrar un nuevo usuario.
-* Devuelve true si el registro es exitoso, false en caso contrario
+* Devuelve un objeto Result
 */
-export async function DBUserRegister(username: string, password: string) {
+export async function DBUserRegister(username: string, password: string): Promise<Result> {
   const usernameAlreadyExists = await db.get('SELECT * FROM User WHERE username = ?', [username]);
 
   if (usernameAlreadyExists) {
     console.log("[DB] (DB) El usuario ya existe:", { username });
-    return false;
+    return { success: false, reason: "El usuario ya existe" };
   }
 
   const passwordHashed = await bcrypt.hash(password, 10);
@@ -47,9 +48,9 @@ export async function DBUserRegister(username: string, password: string) {
 
   if (result) {
     console.log("[DB] Usuario registrado en la base de datos:", { username });
-    return true;
+    return { success: true };
   } else {
-    return false;
+    return { success: false, reason: "Error al registrar usuario" };
   }
 }
 
