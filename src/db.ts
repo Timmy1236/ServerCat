@@ -7,6 +7,10 @@ const db = await open({
   driver: sqlite3.Database,
 });
 
+/*
+* Función para iniciar sesión de usuario.
+* Devuelve true si el usuario y la contraseña son correctos, false en caso contrario
+*/
 export async function DBUserLogin(username: string, password: string) {
   const result = await db.get('SELECT * FROM User WHERE username = ?', [username])
 
@@ -26,6 +30,10 @@ export async function DBUserLogin(username: string, password: string) {
   }
 }
 
+/*
+* Función para registrar un nuevo usuario.
+* Devuelve true si el registro es exitoso, false en caso contrario
+*/
 export async function DBUserRegister(username: string, password: string) {
   const usernameAlreadyExists = await db.get('SELECT * FROM User WHERE username = ?', [username]);
 
@@ -45,6 +53,9 @@ export async function DBUserRegister(username: string, password: string) {
   }
 }
 
+/*
+* Crear la tabla de usuarios en caso que no exista.
+*/
 export async function DBInitialize() {
   db.run(`
   CREATE TABLE IF NOT EXISTS User (
