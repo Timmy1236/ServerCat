@@ -18,7 +18,7 @@ export function registerAuthEvents(
 
     const isAuthenticated = await DBUserLogin(username, password);
 
-    if (isAuthenticated) {
+    if (isAuthenticated.success) {
       users[socket.id] = { username };
       socket.emit("loginResult", { success: true });
 
